@@ -9,7 +9,7 @@ from selenium import webdriver
 class Instagram(unittest.TestCase):
     def setUp(self):
         options = webdriver.ChromeOptions()
-        options.add_argument("--user-data-dir=D:\\WorkSpace\\Python\\profile")
+        options.add_argument("--user-data-dir=D:\\WorkSpace\\Python\\profile") #change path to folder profile
         self.driver = webdriver.Chrome(options=options)
         self.driver.get("https://www.instagram.com/accounts/login/")
         self.driver.implicitly_wait(30)
