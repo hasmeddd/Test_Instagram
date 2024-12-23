@@ -4,14 +4,16 @@ from selenium.webdriver.common.by import By
 import time
 import unittest 
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class Instagram(unittest.TestCase):
     def setUp(self):
         options = webdriver.ChromeOptions()
-        options.add_argument("--user-data-dir=D:\\WorkSpace\\Python\\profile") #change path to folder profile
+        options.add_argument("--user-data-dir=D:\\WorkSpaces\\Learn\\Testing\\UnitTest\\profile") #change path to folder profile
         self.driver = webdriver.Chrome(options=options)
-        self.driver.get("https://www.instagram.com/accounts/login/")
+        self.driver.get("https://www.instagram.com/")
         self.driver.implicitly_wait(30)
 
     def test_tym_post(self):
@@ -21,13 +23,15 @@ class Instagram(unittest.TestCase):
         time.sleep(1)
         checklike = self.driver.find_element("xpath", "//*[@fill='currentColor' and @height='24' and @aria-label='Like' or @aria-label='Unlike']").get_attribute('aria-label')
         time.sleep(5)
-        print("Trạng thái:",checklike)
+        print("Trạng thái:", checklike)
         if checklike.strip() == "Unlike":
             print("Bài viết đã được Like => Kết thúc tiến trình")
             return
         elif checklike.strip() == "Like":
             print("Bài viết chưa được Like => Tiến hành Like")
-            self.driver.find_element("xpath", '//span[@class="xp7jhwk"]').click()
+            btnLike = self.driver.find_element("xpath", '//span[@class="xp7jhwk"]')
+            btnLike.click()
+            btnLike.click()
             checklike = self.driver.find_element("xpath", "//*[@fill='currentColor' and @height='24' and @aria-label='Like' or @aria-label='Unlike']").get_attribute('aria-label')
             time.sleep(5)
             print("Trạng thái:",checklike)
@@ -40,15 +44,17 @@ class Instagram(unittest.TestCase):
                 return
 
     def test_cmt_post(self):
-        user = self.driver.find_element("xpath", '//div[@class="x1n2onr6"]//a').get_attribute('href').split("/")[3]
+        user = self.user
         link_post = self.link_post
         content= self.content
         self.driver.implicitly_wait(30)
         self.driver.get(f'https://www.instagram.com/p/{link_post}/')
         self.driver.implicitly_wait(30)
         self.driver.find_element("xpath", "//textarea[contains(@aria-label,'Add a comment…')]").send_keys(f"{content}")
-        time.sleep(1)
-        self.driver.find_element("xpath", '//div[@class="_aidp"]').click()
+        clickable_element = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//div[text()="Post"]'))
+        )
+        clickable_element.click()
         time.sleep(3)
         us = self.driver.find_element("xpath", f'//span[div="{user}"]/div/a/div/div/span').text
         cont = self.driver.find_element("xpath", f'//div[span="{content}"]/span').text
@@ -66,6 +72,7 @@ class Instagram(unittest.TestCase):
         self.driver.close()
 
 if __name__ == "__main__":
-    Instagram.link_post = 'C1NnQRxImaU';
+    Instagram.link_post = 'DC9o_1QxzHL';
     Instagram.content = "Hello bro"
+    Instagram.user = "abgsaw"
     unittest.main()
